@@ -4,6 +4,7 @@
 // result = if hex file is valid, result is an object
 //          if hex file wasn't valid (crc check failed on any of the lines), result will be false
 function read_hex_file(data) {
+
     data = data.split("\n");
 
     // check if there is an empty line in the end of hex file, if there is, remove it
@@ -14,10 +15,10 @@ function read_hex_file(data) {
     var hexfile_valid = true; // if any of the crc checks failed, this variable flips to false
 
     var result = {
-        data:                   [],
-        end_of_file:            false,
-        bytes_total:            0,
-        start_linear_address:   0
+        data: [],
+        end_of_file: false,
+        bytes_total: 0,
+        start_linear_address: 0
     };
 
     var extended_linear_address = 0;
@@ -34,7 +35,7 @@ function read_hex_file(data) {
         switch (record_type) {
             case 0x00: // data record
                 if (address != next_address || next_address == 0) {
-                    result.data.push({'address': extended_linear_address + address, 'bytes': 0, 'data': []});
+                    result.data.push({ 'address': extended_linear_address + address, 'bytes': 0, 'data': [] });
                 }
 
                 // store address for next comparison
@@ -98,7 +99,7 @@ function microtime() {
     return now;
 }
 
-onmessage = function(event) {
+onmessage = function (event) {
     var time_parsing_start = microtime(); // track time
 
     read_hex_file(event.data);

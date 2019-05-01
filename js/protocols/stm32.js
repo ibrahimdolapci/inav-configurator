@@ -23,23 +23,23 @@ var STM32_protocol = function () {
     this.upload_process_alive;
 
     this.status = {
-        ACK:    0x79, // y
-        NACK:   0x1F
+        ACK: 0x79, // y
+        NACK: 0x1F
     };
 
     this.command = {
-        get:                    0x00, // Gets the version and the allowed commands supported by the current version of the bootloader
-        get_ver_r_protect_s:    0x01, // Gets the bootloader version and the Read Protection status of the Flash memory
-        get_ID:                 0x02, // Gets the chip ID
-        read_memory:            0x11, // Reads up to 256 bytes of memory starting from an address specified by the application
-        go:                     0x21, // Jumps to user application code located in the internal Flash memory or in SRAM
-        write_memory:           0x31, // Writes up to 256 bytes to the RAM or Flash memory starting from an address specified by the application
-        erase:                  0x43, // Erases from one to all the Flash memory pages
-        extended_erase:         0x44, // Erases from one to all the Flash memory pages using two byte addressing mode (v3.0+ usart).
-        write_protect:          0x63, // Enables the write protection for some sectors
-        write_unprotect:        0x73, // Disables the write protection for all Flash memory sectors
-        readout_protect:        0x82, // Enables the read protection
-        readout_unprotect:      0x92  // Disables the read protection
+        get: 0x00, // Gets the version and the allowed commands supported by the current version of the bootloader
+        get_ver_r_protect_s: 0x01, // Gets the bootloader version and the Read Protection status of the Flash memory
+        get_ID: 0x02, // Gets the chip ID
+        read_memory: 0x11, // Reads up to 256 bytes of memory starting from an address specified by the application
+        go: 0x21, // Jumps to user application code located in the internal Flash memory or in SRAM
+        write_memory: 0x31, // Writes up to 256 bytes to the RAM or Flash memory starting from an address specified by the application
+        erase: 0x43, // Erases from one to all the Flash memory pages
+        extended_erase: 0x44, // Erases from one to all the Flash memory pages using two byte addressing mode (v3.0+ usart).
+        write_protect: 0x63, // Enables the write protection for some sectors
+        write_unprotect: 0x73, // Disables the write protection for all Flash memory sectors
+        readout_protect: 0x82, // Enables the read protection
+        readout_unprotect: 0x92  // Disables the read protection
     };
 
     // Erase (x043) and Extended Erase (0x44) are exclusive. A device may support either the Erase command or the Extended Erase command but not both.
@@ -58,9 +58,9 @@ STM32_protocol.prototype.connect = function (port, baud, hex, options, callback)
 
     // we will crunch the options here since doing it inside initialization routine would be too late
     self.options = {
-        no_reboot:      false,
-        reboot_baud:    false,
-        erase_chip:     false
+        no_reboot: false,
+        reboot_baud: false,
+        erase_chip: false
     };
 
     if (options.no_reboot) {
@@ -74,7 +74,7 @@ STM32_protocol.prototype.connect = function (port, baud, hex, options, callback)
     }
 
     if (self.options.no_reboot) {
-        serial.connect(port, {bitrate: self.baud, parityBit: 'even', stopBits: 'one'}, function (openInfo) {
+        serial.connect(port, { bitrate: self.baud, parityBit: 'even', stopBits: 'one' }, function (openInfo) {
             if (openInfo) {
                 // we are connected, disabling connect button in the UI
                 GUI.connect_lock = true;
@@ -85,7 +85,7 @@ STM32_protocol.prototype.connect = function (port, baud, hex, options, callback)
             }
         });
     } else {
-        serial.connect(port, {bitrate: self.options.reboot_baud}, function (openInfo) {
+        serial.connect(port, { bitrate: self.options.reboot_baud }, function (openInfo) {
             if (openInfo) {
                 console.log('Sending ascii "R" to reboot');
 
@@ -102,13 +102,13 @@ STM32_protocol.prototype.connect = function (port, baud, hex, options, callback)
                         if (result) {
                             // delay to allow board to boot in bootloader mode
                             // required to detect if a DFU device appears
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 // refresh device list
-                                PortHandler.check_usb_devices(function(dfu_available) {
-                                    if(dfu_available) {
+                                PortHandler.check_usb_devices(function (dfu_available) {
+                                    if (dfu_available) {
                                         STM32DFU.connect(usbDevices.STM32DFU, hex, options);
                                     } else {
-                                        serial.connect(port, {bitrate: self.baud, parityBit: 'even', stopBits: 'one'}, function (openInfo) {
+                                        serial.connect(port, { bitrate: self.baud, parityBit: 'even', stopBits: 'one' }, function (openInfo) {
                                             if (openInfo) {
                                                 self.initialize();
                                             } else {
@@ -233,7 +233,7 @@ STM32_protocol.prototype.send = function (Array, bytes_to_read, callback) {
     this.receive_buffer = [];
 
     // send over the actual data
-    serial.send(bufferOut, function (writeInfo) {});
+    serial.send(bufferOut, function (writeInfo) { });
 };
 
 // val = single byte to be verified
@@ -271,7 +271,7 @@ STM32_protocol.prototype.verify_chip_signature = function (signature) {
             break;
         case 0x414: // not tested
             console.log('Chip recognized as F1 High-density');
-            this.available_flash_size =  0x40000;
+            this.available_flash_size = 0x40000;
             this.page_size = 2048;
             break;
         case 0x418: // not tested
@@ -315,7 +315,7 @@ STM32_protocol.prototype.verify_chip_signature = function (signature) {
             break;
         case 0x422:
             console.log('Chip recognized as F3 STM32F30xxx, STM32F31xxx');
-            this.available_flash_size =  0x40000;
+            this.available_flash_size = 0x40000;
             this.page_size = 2048;
             break;
     }
@@ -441,7 +441,7 @@ STM32_protocol.prototype.upload_procedure = function (step) {
 
                     self.send([self.command.extended_erase, 0xBB], 1, function (reply) {
                         if (self.verify_response(self.status.ACK, reply)) {
-                            self.send( [0xFF, 0xFF, 0x00], 1, function (reply) {
+                            self.send([0xFF, 0xFF, 0x00], 1, function (reply) {
                                 if (self.verify_response(self.status.ACK, reply)) {
                                     console.log('Executing global chip extended erase: done');
                                     self.upload_procedure(5);
@@ -503,7 +503,7 @@ STM32_protocol.prototype.upload_procedure = function (step) {
             }
 
             if (self.options.erase_chip) {
-                var message = 'Executing global chip erase' ;
+                var message = 'Executing global chip erase';
                 console.log(message);
                 $('span.progressLabel').text(message + ' ...');
 

@@ -273,7 +273,7 @@ var MSP = {
         }
     },
 
-    send_message: function (code, data, callback_sent, callback_msp, protocolVersion) {
+    send_message: function (code, data, callback_sent, callback_msp, protocolVersion = this.protocolVersion) {
         var payloadLength = data && data.length ? data.length : 0;
         var length;
         var buffer;
@@ -281,9 +281,6 @@ var MSP = {
         var checksum;
         var ii;
 
-        if (!protocolVersion) {
-            protocolVersion = this.protocolVersion;
-        }
 
         switch (protocolVersion) {
             case this.constants.PROTOCOL_V1:

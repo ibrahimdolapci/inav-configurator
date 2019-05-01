@@ -4,8 +4,21 @@
   "version": "2.1.4",
   "main": "main.html",
   "default_locale": "en",
+  "watch": {
+    "start": {
+      "patterns": [
+        "js",
+        "src",
+        "support",
+        "tabs"
+      ],
+      "extensions": "js,html,css",
+      "quiet": false
+    }
+  },
   "scripts": {
-    "start": "node node_modules/gulp/bin/gulp.js build && node node_modules/nw/bin/nw ."
+    "watch": "npm-watch start",
+    "start": "gulp build && nw ."
   },
   "window": {
     "title": "INAV Configurator",
@@ -32,6 +45,7 @@
     "jquery-ui-npm": "1.12.0",
     "marked": "^0.3.17",
     "minimist": "^1.2.0",
+    "npm-watch": "^0.6.0",
     "nw": "^0.36.1-sdk",
     "nw-builder": "^3.5.7",
     "nw-dialog": "^1.0.7",
@@ -39,5 +53,6 @@
     "temp": "^0.8.3",
     "three": "0.72.0",
     "xml2js": "^0.4.19"
-  }
+  },
+  "devDependencies": {}
 }
